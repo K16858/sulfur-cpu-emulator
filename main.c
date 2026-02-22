@@ -61,6 +61,7 @@ uint16_t alu(uint16_t op, uint16_t a, uint16_t b, bool *carry_out) {
       return a;
     }
 
+    // last pushed bit
     *carry_out = (bool)((a >> (16 - shift)) & 1);
 
     return (uint16_t)(a << shift);
@@ -71,6 +72,7 @@ uint16_t alu(uint16_t op, uint16_t a, uint16_t b, bool *carry_out) {
       return a;
     }
 
+    // last pushed bit
     *carry_out = (bool)((a >> (shift - 1)) & 1);
 
     return (uint16_t)(a >> shift);
@@ -82,6 +84,8 @@ uint16_t alu(uint16_t op, uint16_t a, uint16_t b, bool *carry_out) {
 void init_state(struct state *state) { memset(state, 0, sizeof(struct state)); }
 
 int step(struct state *state) {
+  uint16_t result = 0;
+  bool carry_out;
   uint16_t instr = state->mem[state->pc];
   uint16_t next_pc = state->pc + 1;
 
@@ -98,6 +102,22 @@ int step(struct state *state) {
   switch (opcode) {
   case 0b0000:
     printf("ALU\n");
+
+    result = alu(func, state->regs[rs1], state->regs[rs2], &carry_out);
+    state->regs[rd] = result;
+
+    // SHIFT 0, LOGIC
+    if (func == 0b110 || func == 0b111) {
+      uint16_t shift = state->regs[rs2] & 0xF;
+      if (shift != 0) {
+        state->C = carry_out;
+      }
+    } else if (func != 0b011 && func != 0b100 && func != 0b101) {
+      state->C = carry_out;
+    }
+
+    state->Z = (result == 0);
+    state->N = (result & 0x8000) != 0;
     break;
   case 0b0001:
     printf("ADDI\n");
