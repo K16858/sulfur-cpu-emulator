@@ -62,6 +62,6 @@ int step(struct state *state) {
 }
 
 int main(void) {
-  struct state state;
+  static struct state state;
   init_state(&state);
 }
