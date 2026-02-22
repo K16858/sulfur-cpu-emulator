@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 struct state {
   uint16_t pc;
@@ -9,6 +10,8 @@ struct state {
   bool Z, N, C;
   bool running;
 };
+
+void init_state(struct state *state) { memset(state, 0, sizeof(struct state)); }
 
 int step(struct state *state) {
   uint16_t instr = state->mem[state->pc];
@@ -58,4 +61,7 @@ int step(struct state *state) {
   return 0;
 }
 
-int main(void) { struct state state; }
+int main(void) {
+  struct state state;
+  init_state(&state);
+}
