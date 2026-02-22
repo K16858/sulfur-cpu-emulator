@@ -11,6 +11,74 @@ struct state {
   bool running;
 };
 
+uint16_t alu(uint16_t op, uint16_t a, uint16_t b, bool *carry_out) {
+  uint32_t a32 = (uint32_t)a;
+  uint32_t b32 = (uint32_t)b;
+  uint32_t result = 0;
+  uint16_t shift = b & 0xF;
+
+  switch (op) {
+  case 0b000:
+    // ADD
+    result = a32 + b32;
+    *carry_out = (bool)(result >> 16);
+
+    return (uint16_t)result;
+  case 0b001:
+    // SUB
+    result = a32 - b32;
+
+    // No Borrow -> C = 1;
+    if (a32 >= b32) {
+      *carry_out = true;
+    } else {
+      *carry_out = false;
+    }
+
+    return (uint16_t)result;
+  case 0b010:
+    // MUL
+    result = a32 * b32;
+    *carry_out = (bool)(result >> 16);
+
+    return (uint16_t)result;
+  case 0b011:
+    // AND
+    *carry_out = false;
+    return a & b;
+  case 0b100:
+    // OR
+    *carry_out = false;
+    return a | b;
+  case 0b101:
+    // XOR
+    *carry_out = false;
+    return a ^ b;
+  case 0b110:
+    // SHL
+    if (shift == 0) {
+      *carry_out = false;
+      return a;
+    }
+
+    *carry_out = (bool)((a >> (16 - shift)) & 1);
+
+    return (uint16_t)(a << shift);
+  case 0b111:
+    // SHR
+    if (shift == 0) {
+      *carry_out = false;
+      return a;
+    }
+
+    *carry_out = (bool)((a >> (shift - 1)) & 1);
+
+    return (uint16_t)(a >> shift);
+  default:
+    return 0;
+  }
+}
+
 void init_state(struct state *state) { memset(state, 0, sizeof(struct state)); }
 
 int step(struct state *state) {
