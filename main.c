@@ -29,31 +29,31 @@ int step(struct state *state) {
 
   switch (opcode) {
   case 0b0000:
-    printf("ALU");
+    printf("ALU\n");
     break;
   case 0b0001:
-    printf("ADDI");
+    printf("ADDI\n");
     break;
   case 0b0010:
-    printf("SUBI");
+    printf("SUBI\n");
     break;
   case 0b0011:
-    printf("LOAD");
+    printf("LOAD\n");
     break;
   case 0b0100:
-    printf("STORE");
+    printf("STORE\n");
     break;
   case 0b0101:
-    printf("BRANCH");
+    printf("BRANCH\n");
     break;
   case 0b0110:
-    printf("JAL");
+    printf("JAL\n");
     break;
   case 0b0111:
-    printf("RET");
+    printf("RET\n");
     break;
   default:
-    printf("undefined");
+    printf("undefined\n");
     return 1;
   }
 
@@ -64,4 +64,9 @@ int step(struct state *state) {
 int main(void) {
   static struct state state;
   init_state(&state);
+  state.mem[0] = 0b0000000000000111;
+  state.mem[1] = 0b0100000000000000;
+
+  step(&state);
+  step(&state);
 }
