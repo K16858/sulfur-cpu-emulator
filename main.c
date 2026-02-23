@@ -27,7 +27,7 @@ uint16_t alu(uint16_t op, uint16_t a, uint16_t b) {
     return (uint16_t)result;
   case 0b010:
     // SLT
-    result = (a < b) ? 1 : 0;
+    result = ((int16_t)a < (int16_t)b) ? 1 : 0;
     return (uint16_t)result;
   case 0b011:
     // AND
@@ -85,9 +85,7 @@ int step(struct state *state) {
   switch (opcode) {
   case 0b0000:
     printf("ALU\n");
-
     state->regs[rd] = alu(func, state->regs[rs1], state->regs[rs2]);
-
     break;
   case 0b0001:
     printf("ADDI\n");
