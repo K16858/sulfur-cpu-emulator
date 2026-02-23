@@ -91,9 +91,11 @@ int step(struct state *state) {
     break;
   case 0b0001:
     printf("ADDI\n");
+    state->regs[rd] = state->regs[rs1] + simm;
     break;
   case 0b0010:
     printf("SUBI\n");
+    state->regs[rd] = state->regs[rs1] - simm;
     break;
   case 0b0011:
     printf("LOAD\n");
