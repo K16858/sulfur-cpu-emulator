@@ -26,8 +26,8 @@ uint16_t alu(uint16_t op, uint16_t a, uint16_t b) {
     result = a32 - b32;
     return (uint16_t)result;
   case 0b010:
-    // MUL
-    result = a32 * b32;
+    // SLT
+    result = (a < b) ? 1 : 0;
     return (uint16_t)result;
   case 0b011:
     // AND
