@@ -102,12 +102,9 @@ int step(struct state *state) {
     printf("STORE\n");
     break;
   case 0b0101:
-    printf("BRANCH\n");
-    break;
-  case 0b0110:
     printf("BEQ\n");
     break;
-  case 0b0111:
+  case 0b0110:
     printf("BNE\n");
     break;
   case 0b0111:
