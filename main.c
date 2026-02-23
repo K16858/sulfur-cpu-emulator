@@ -97,9 +97,13 @@ int step(struct state *state) {
     break;
   case 0b0011:
     printf("LOAD\n");
+    uint16_t addr = state->regs[rs1] + simm;
+    state->regs[rd] = state->mem[addr];
     break;
   case 0b0100:
     printf("STORE\n");
+    uint16_t addr = state->regs[rs1] + simm;
+    state->mem[addr] = state->regs[rd];
     break;
   case 0b0101:
     printf("BEQ\n");
