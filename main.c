@@ -105,9 +105,15 @@ int step(struct state *state) {
     printf("BRANCH\n");
     break;
   case 0b0110:
-    printf("JAL\n");
+    printf("BEQ\n");
     break;
   case 0b0111:
+    printf("BNE\n");
+    break;
+  case 0b0111:
+    printf("JAL\n");
+    break;
+  case 0b1000:
     printf("RET\n");
     break;
   default:
