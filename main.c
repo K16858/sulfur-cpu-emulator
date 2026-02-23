@@ -103,9 +103,15 @@ int step(struct state *state) {
     break;
   case 0b0101:
     printf("BEQ\n");
+    if (state->regs[rd] == state->regs[rs1]) {
+      next_pc += (int16_t)simm;
+    }
     break;
   case 0b0110:
     printf("BNE\n");
+    if (state->regs[rd] != state->regs[rs1]) {
+      next_pc += (int16_t)simm;
+    }
     break;
   case 0b0111:
     printf("JAL\n");
