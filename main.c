@@ -102,6 +102,10 @@ int step(struct state *state) {
     break;
   case 0b0100:
     printf("STORE\n");
+    if (addr < 0x2000) {
+      printf("Write to ROM!\n");
+      return 1;
+    }
     uint16_t addr = state->regs[rs1] + simm;
     state->mem[addr] = state->regs[rd];
     break;
