@@ -123,6 +123,10 @@ int step(struct state *state) {
     break;
   case 0b0111:
     printf("JAL\n");
+    // set return address
+    state->regs[6] = next_pc;
+    // jump
+    next_pc += simm;
     break;
   case 0b1000:
     printf("RET\n");
