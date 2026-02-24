@@ -130,6 +130,7 @@ int step(struct state *state) {
     break;
   case 0b1000:
     printf("RET\n");
+    next_pc = state->regs[6];
     break;
   default:
     printf("undefined\n");
