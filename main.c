@@ -59,6 +59,11 @@ uint16_t alu(uint16_t op, uint16_t a, uint16_t b) {
 
 void init_state(struct state *state) { memset(state, 0, sizeof(struct state)); }
 
+uint16_t sign_extend(uint16_t imm, uint bit_count) {
+  int16_t s_imm = (int16_t)(imm << (16 - bit_count));
+  return (uint16_t)(s_imm >> (16 - bit_count));
+}
+
 int step(struct state *state) {
   uint16_t instr = state->mem[state->pc];
   uint16_t next_pc = state->pc + 1;
@@ -79,32 +84,9 @@ int step(struct state *state) {
   // 0000(op) 000000000(imm)
   uint16_t imm12 = instr & 0b0000111111111111;
 
-  // sign extension
-  uint16_t simm6;
-  // bit5 == 1 (negative)
-  if (imm6 & 0b0000000000100000) {
-    simm6 = imm6 | 0b1111111111100000;
-  } else {
-    simm6 = imm6;
-  }
-
-  // sign extension
-  uint16_t simm9;
-  // bit8 == 1 (negative)
-  if (imm9 & 0b0000000010000000) {
-    simm9 = imm9 | 0b111111110000000;
-  } else {
-    simm9 = imm9;
-  }
-
-  // sign extension
-  uint16_t simm12;
-  // bit11 == 1 (negative)
-  if (imm12 & 0b000010000000000) {
-    simm12 = imm12 | 0b1111000000000000;
-  } else {
-    simm12 = imm12;
-  }
+  uint16_t simm6 = sign_extend(imm6, 6);
+  uint16_t simm9 = sign_extend(imm9, 9);
+  uint16_t simm12 = sign_extend(imm12, 12);
 
   switch (opcode) {
   case 0b0000:
