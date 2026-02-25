@@ -81,7 +81,7 @@ int step(struct state *state) {
   // 0000(op) 000(rd) 000000000(imm)
   uint16_t imm9 = instr & 0b0000000111111111;
 
-  // 0000(op) 000000000(imm)
+  // 0000(op) 000000000000(imm)
   uint16_t imm12 = instr & 0b0000111111111111;
 
   uint16_t simm6 = sign_extend(imm6, 6);
@@ -116,14 +116,14 @@ int step(struct state *state) {
     state->mem[addr] = state->regs[rd];
     break;
   case 0b0101:
-    printf("BEQ\n");
-    if (state->regs[rd] == state->regs[rs1]) {
+    printf("BEQZ\n");
+    if (state->regs[rd] == state->regs[0]) {
       next_pc += (int16_t)simm9;
     }
     break;
   case 0b0110:
-    printf("BNE\n");
-    if (state->regs[rd] != state->regs[rs1]) {
+    printf("BNEZ\n");
+    if (state->regs[rd] != state->regs[0]) {
       next_pc += (int16_t)simm9;
     }
     break;
