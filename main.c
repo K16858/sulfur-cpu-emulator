@@ -59,7 +59,7 @@ uint16_t alu(uint16_t op, uint16_t a, uint16_t b) {
 
 void init_state(struct state *state) { memset(state, 0, sizeof(struct state)); }
 
-uint16_t sign_extend(uint16_t imm, uint bit_count) {
+uint16_t sign_extend(uint16_t imm, int bit_count) {
   int16_t s_imm = (int16_t)(imm << (16 - bit_count));
   return (uint16_t)(s_imm >> (16 - bit_count));
 }
@@ -103,17 +103,17 @@ int step(struct state *state) {
     break;
   case 0b0011:
     printf("LOAD\n");
-    uint16_t addr = state->regs[rs1] + simm6;
-    state->regs[rd] = state->mem[addr];
+    uint16_t load_addr = state->regs[rs1] + simm6;
+    state->regs[rd] = state->mem[load_addr];
     break;
   case 0b0100:
     printf("STORE\n");
-    if (addr < 0x2000) {
+    uint16_t store_addr = state->regs[rs1] + simm6;
+    if (store_addr < 0x2000) {
       printf("Write to ROM!\n");
       return 1;
     }
-    uint16_t addr = state->regs[rs1] + simm6;
-    state->mem[addr] = state->regs[rd];
+    state->mem[store_addr] = state->regs[rd];
     break;
   case 0b0101:
     printf("BEQZ\n");
