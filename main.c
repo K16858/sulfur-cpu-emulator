@@ -70,16 +70,40 @@ int step(struct state *state) {
   uint16_t rs1 = (instr & 0b0000000111000000) >> 6;
   uint16_t rd = (instr & 0b0000111000000000) >> 9;
 
-  // 0000(op) 000(rd) 000(rs1) 000000(imm)
-  uint16_t imm = instr & 0b0000000000111111;
+  // 0000(op) 000(rd) 000(rs) 000000(imm)
+  uint16_t imm6 = instr & 0b0000000000111111;
+
+  // 0000(op) 000(rd) 000000000(imm)
+  uint16_t imm9 = instr & 0b0000000111111111;
+
+  // 0000(op) 000000000(imm)
+  uint16_t imm12 = instr & 0b0000111111111111;
 
   // sign extension
-  uint16_t simm;
+  uint16_t simm6;
   // bit5 == 1 (negative)
-  if (imm & 0b0000000000100000) {
-    simm = imm | 0b1111111111100000;
+  if (imm6 & 0b0000000000100000) {
+    simm6 = imm6 | 0b1111111111100000;
   } else {
-    simm = imm;
+    simm6 = imm6;
+  }
+
+  // sign extension
+  uint16_t simm9;
+  // bit8 == 1 (negative)
+  if (imm9 & 0b0000000010000000) {
+    simm9 = imm9 | 0b111111110000000;
+  } else {
+    simm9 = imm9;
+  }
+
+  // sign extension
+  uint16_t simm12;
+  // bit11 == 1 (negative)
+  if (imm12 & 0b000010000000000) {
+    simm12 = imm12 | 0b1111000000000000;
+  } else {
+    simm12 = imm12;
   }
 
   switch (opcode) {
@@ -89,15 +113,15 @@ int step(struct state *state) {
     break;
   case 0b0001:
     printf("ADDI\n");
-    state->regs[rd] = state->regs[rs1] + simm;
+    state->regs[rd] = state->regs[rd] + simm9;
     break;
   case 0b0010:
     printf("SUBI\n");
-    state->regs[rd] = state->regs[rs1] - simm;
+    state->regs[rd] = state->regs[rd] - simm9;
     break;
   case 0b0011:
     printf("LOAD\n");
-    uint16_t addr = state->regs[rs1] + simm;
+    uint16_t addr = state->regs[rs1] + simm6;
     state->regs[rd] = state->mem[addr];
     break;
   case 0b0100:
@@ -106,19 +130,19 @@ int step(struct state *state) {
       printf("Write to ROM!\n");
       return 1;
     }
-    uint16_t addr = state->regs[rs1] + simm;
+    uint16_t addr = state->regs[rs1] + simm6;
     state->mem[addr] = state->regs[rd];
     break;
   case 0b0101:
     printf("BEQ\n");
     if (state->regs[rd] == state->regs[rs1]) {
-      next_pc += (int16_t)simm;
+      next_pc += (int16_t)simm9;
     }
     break;
   case 0b0110:
     printf("BNE\n");
     if (state->regs[rd] != state->regs[rs1]) {
-      next_pc += (int16_t)simm;
+      next_pc += (int16_t)simm9;
     }
     break;
   case 0b0111:
@@ -126,7 +150,7 @@ int step(struct state *state) {
     // set return address
     state->regs[6] = next_pc;
     // jump
-    next_pc += simm;
+    next_pc += simm12;
     break;
   case 0b1000:
     printf("RET\n");
