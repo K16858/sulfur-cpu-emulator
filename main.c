@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
 
 struct state {
   uint16_t pc;
@@ -73,29 +74,50 @@ uint16_t sign_extend(uint16_t imm, int bit_count) {
   return (uint16_t)(s_imm >> (16 - bit_count));
 }
 
+void decode(uint16_t instr, struct instruction *decode_result) {
+  // 0000(op) 000(rd) 000(rs1) 000(rs2) 000(func)
+  decode_result->opcode = instr >> 12;
+  decode_result->func = instr & 0b0000000000000111;
+  decode_result->rs2 = (instr & 0b0000000000111000) >> 3;
+  decode_result->rs1 = (instr & 0b0000000111000000) >> 6;
+  decode_result->rd = (instr & 0b0000111000000000) >> 9;
+
+  switch (decode_result->opcode) {
+  case 0b0011: // LOAD
+  case 0b0100: // STORE
+    // 0000(op) 000(rd) 000(rs) 000000(imm)
+    decode_result->imm = (uint16_t)sign_extend(instr & 0b0000000000111111, 6);
+    break;
+  case 0b0001: // ADDI
+  case 0b0010: // SUBI
+  case 0b0101: // BEQZ
+  case 0b0110: // BNEZ
+  case 0b1001: // LUI
+    // 0000(op) 000(rd) 000000000(imm)
+    decode_result->imm = (uint16_t)sign_extend(instr & 0b0000000111111111, 9);
+    break;
+  case 0b0111: // JAL
+    // 0000(op) 000000000000(imm)
+    decode_result->imm = (uint16_t)sign_extend(instr & 0b0000111111111111, 12);
+    break;
+  default:
+    break;
+  }
+}
+
 int step(struct state *state) {
   uint16_t instr = state->mem[state->pc];
   uint16_t next_pc = state->pc + 1;
+  struct instruction decode_result;
 
-  // 0000(op) 000(rd) 000(rs1) 000(rs2) 000(func)
-  uint16_t opcode = instr >> 12;
-  uint16_t func = instr & 0b0000000000000111;
-  uint16_t rs2 = (instr & 0b0000000000111000) >> 3;
-  uint16_t rs1 = (instr & 0b0000000111000000) >> 6;
-  uint16_t rd = (instr & 0b0000111000000000) >> 9;
+  decode(instr, &decode_result);
 
-  // 0000(op) 000(rd) 000(rs) 000000(imm)
-  uint16_t imm6 = instr & 0b0000000000111111;
-
-  // 0000(op) 000(rd) 000000000(imm)
-  uint16_t imm9 = instr & 0b0000000111111111;
-
-  // 0000(op) 000000000000(imm)
-  uint16_t imm12 = instr & 0b0000111111111111;
-
-  uint16_t simm6 = sign_extend(imm6, 6);
-  uint16_t simm9 = sign_extend(imm9, 9);
-  uint16_t simm12 = sign_extend(imm12, 12);
+  uint16_t opcode = decode_result.opcode;
+  uint16_t rd = decode_result.rd;
+  uint16_t rs1 = decode_result.rs1;
+  uint16_t rs2 = decode_result.rs2;
+  uint16_t func = decode_result.func;
+  uint16_t imm = decode_result.imm;
 
   switch (opcode) {
   case 0b0000:
@@ -104,20 +126,20 @@ int step(struct state *state) {
     break;
   case 0b0001:
     printf("ADDI\n");
-    state->regs[rd] = state->regs[rd] + simm9;
+    state->regs[rd] = state->regs[rd] + imm;
     break;
   case 0b0010:
     printf("SUBI\n");
-    state->regs[rd] = state->regs[rd] - simm9;
+    state->regs[rd] = state->regs[rd] - imm;
     break;
   case 0b0011:
     printf("LOAD\n");
-    uint16_t load_addr = state->regs[rs1] + simm6;
+    uint16_t load_addr = state->regs[rs1] + imm;
     state->regs[rd] = state->mem[load_addr];
     break;
   case 0b0100:
     printf("STORE\n");
-    uint16_t store_addr = state->regs[rs1] + simm6;
+    uint16_t store_addr = state->regs[rs1] + imm;
     if (store_addr < 0x2000) {
       printf("Write to ROM!\n");
       return 1;
@@ -127,13 +149,13 @@ int step(struct state *state) {
   case 0b0101:
     printf("BEQZ\n");
     if (state->regs[rd] == 0) {
-      next_pc += (int16_t)simm9;
+      next_pc += (int16_t)imm;
     }
     break;
   case 0b0110:
     printf("BNEZ\n");
     if (state->regs[rd] != 0) {
-      next_pc += (int16_t)simm9;
+      next_pc += (int16_t)imm;
     }
     break;
   case 0b0111:
@@ -141,7 +163,7 @@ int step(struct state *state) {
     // set return address
     state->regs[6] = next_pc;
     // jump
-    next_pc += simm12;
+    next_pc += imm;
     break;
   case 0b1000:
     printf("RET\n");
@@ -149,7 +171,7 @@ int step(struct state *state) {
     break;
   case 0b1001:
     printf("LUI\n");
-    state->regs[rd] = imm9 << 7;
+    state->regs[rd] = imm << 7;
     break;
   default:
     printf("undefined\n");
