@@ -117,13 +117,13 @@ int step(struct state *state) {
     break;
   case 0b0101:
     printf("BEQZ\n");
-    if (state->regs[rd] == state->regs[0]) {
+    if (state->regs[rd] == 0) {
       next_pc += (int16_t)simm9;
     }
     break;
   case 0b0110:
     printf("BNEZ\n");
-    if (state->regs[rd] != state->regs[0]) {
+    if (state->regs[rd] != 0) {
       next_pc += (int16_t)simm9;
     }
     break;
@@ -147,6 +147,7 @@ int step(struct state *state) {
     return 1;
   }
 
+  state->regs[0] = 0;
   state->pc = next_pc;
   return 0;
 }
