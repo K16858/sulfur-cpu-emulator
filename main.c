@@ -10,6 +10,15 @@ struct state {
   bool running;
 };
 
+struct instruction {
+  uint16_t opcode;
+  uint16_t rd;
+  uint16_t rs1;
+  uint16_t rs2;
+  uint16_t func;
+  int16_t imm;
+};
+
 uint16_t alu(uint16_t op, uint16_t a, uint16_t b) {
   uint32_t a32 = (uint32_t)a;
   uint32_t b32 = (uint32_t)b;
