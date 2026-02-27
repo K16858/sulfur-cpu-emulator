@@ -105,7 +105,7 @@ void decode(uint16_t instr, struct instruction *decode_result) {
   }
 }
 
-int excute(struct state *state, struct instruction instr) {
+int execute(struct state *state, struct instruction instr) {
   uint16_t next_pc = state->pc + 1;
 
   uint16_t opcode = instr.opcode;
@@ -185,7 +185,7 @@ int step(struct state *state) {
   struct instruction decode_result;
 
   decode(instr, &decode_result);
-  excute(state, decode_result);
+  execute(state, decode_result);
 
   return 0;
 }
