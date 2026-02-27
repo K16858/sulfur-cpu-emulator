@@ -105,19 +105,15 @@ void decode(uint16_t instr, struct instruction *decode_result) {
   }
 }
 
-int step(struct state *state) {
-  uint16_t instr = state->mem[state->pc];
+int excute(struct state *state, struct instruction instr) {
   uint16_t next_pc = state->pc + 1;
-  struct instruction decode_result;
 
-  decode(instr, &decode_result);
-
-  uint16_t opcode = decode_result.opcode;
-  uint16_t rd = decode_result.rd;
-  uint16_t rs1 = decode_result.rs1;
-  uint16_t rs2 = decode_result.rs2;
-  uint16_t func = decode_result.func;
-  uint16_t imm = decode_result.imm;
+  uint16_t opcode = instr.opcode;
+  uint16_t rd = instr.rd;
+  uint16_t rs1 = instr.rs1;
+  uint16_t rs2 = instr.rs2;
+  uint16_t func = instr.func;
+  uint16_t imm = instr.imm;
 
   switch (opcode) {
   case 0b0000:
@@ -180,6 +176,17 @@ int step(struct state *state) {
 
   state->regs[0] = 0;
   state->pc = next_pc;
+
+  return 0;
+}
+
+int step(struct state *state) {
+  uint16_t instr = state->mem[state->pc];
+  struct instruction decode_result;
+
+  decode(instr, &decode_result);
+  excute(state, decode_result);
+
   return 0;
 }
 
