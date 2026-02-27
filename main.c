@@ -211,7 +211,7 @@ int main(void) {
   init_state(&state);
   state.mem[0] = 0b0000000000000111;
   state.mem[1] = 0b0100000000000000;
-  state.mem[1] = 0b1111100000000000;
+  state.mem[2] = 0b1111100000000000;
 
   run(&state);
 
