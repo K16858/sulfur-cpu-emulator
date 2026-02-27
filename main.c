@@ -67,7 +67,10 @@ uint16_t alu(uint16_t op, uint16_t a, uint16_t b) {
   }
 }
 
-void init_state(struct state *state) { memset(state, 0, sizeof(struct state)); }
+void init_state(struct state *state) {
+  memset(state, 0, sizeof(struct state));
+  state->running = true;
+}
 
 uint16_t sign_extend(uint16_t imm, int bit_count) {
   int16_t s_imm = (int16_t)(imm << (16 - bit_count));
