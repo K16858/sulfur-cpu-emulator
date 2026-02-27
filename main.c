@@ -192,7 +192,9 @@ int step(struct state *state) {
   struct instruction decode_result;
 
   decode(instr, &decode_result);
-  execute(state, decode_result);
+  if (execute(state, decode_result)) {
+    return 1;
+  }
 
   return 0;
 }
