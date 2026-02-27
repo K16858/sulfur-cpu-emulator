@@ -169,6 +169,10 @@ int execute(struct state *state, struct instruction instr) {
     printf("LUI\n");
     state->regs[rd] = imm << 7;
     break;
+  case 0b1111:
+    printf("HALT\n");
+    state->running = false;
+    break;
   default:
     printf("undefined\n");
     return 1;
