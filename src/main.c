@@ -26,6 +26,7 @@ int load_mem(char *file, uint16_t *mem) {
     i++;
   }
 
+  fclose(fp);
   return 0;
 }
 
