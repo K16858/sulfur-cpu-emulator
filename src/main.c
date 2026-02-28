@@ -1,8 +1,5 @@
 #include "cpu.h"
 #include "emulator.h"
-#include <cstdint>
-#include <cstdlib>
-#include <cstring>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -12,7 +9,7 @@
 
 #define INST_LEN 6
 
-int load_machinelang(char *file, uint16_t *mem[]) {
+int load_mem(char *file, uint16_t *mem[]) {
   FILE *fp = fopen(file, "r");
 
   if (fp == NULL) {
