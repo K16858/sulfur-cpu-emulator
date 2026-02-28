@@ -30,7 +30,7 @@ int load_mem(char *file, uint16_t *mem) {
   }
 
   fclose(fp);
-  return 0;
+  return i;
 }
 
 void run(struct state *state) {
@@ -47,7 +47,12 @@ int main(void) {
   init_state(&state);
   char *file = "tests/test.mem";
 
-  load_mem(file, state.mem);
+  int word_count = load_mem(file, state.mem);
+  if (word_count > 0) {
+    printf("Successfully loaded %d words.\n", word_count);
+  } else {
+    printf("Failed to load program or file is empty.\n");
+  }
 
   run(&state);
 
