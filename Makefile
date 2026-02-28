@@ -1,21 +1,20 @@
-# 変数の定義
 CC = gcc
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -Isrc
 TARGET = cpu_emu
 
+SRCDIR = src
+SOURCES = $(SRCDIR)/main.c $(SRCDIR)/cpu.c
 OBJS = main.o cpu.o
-HEADERS = emulator.h cpu.h
+
+HEADERS = $(SRCDIR)/emulator.h $(SRCDIR)/cpu.h
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
 
-main.o: main.c $(HEADERS)
-	$(CC) $(CFLAGS) -c main.c
-
-cpu.o: cpu.c $(HEADERS)
-	$(CC) $(CFLAGS) -c cpu.c
+%.o: $(SRCDIR)/%.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 run: $(TARGET)
 	./$(TARGET)
