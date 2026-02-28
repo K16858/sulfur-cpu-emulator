@@ -9,7 +9,7 @@
 
 #define INST_LEN 6
 
-int load_mem(char *file, uint16_t *mem[]) {
+int load_mem(char *file, uint16_t *mem) {
   FILE *fp = fopen(file, "r");
 
   if (fp == NULL) {
@@ -22,7 +22,7 @@ int load_mem(char *file, uint16_t *mem[]) {
   int i = 0;
 
   while (fgets(buf, INST_LEN, fp)) {
-    *mem[i] = (uint16_t)strtol(buf, &endp, 0);
+    mem[i] = (uint16_t)strtol(buf, &endp, 0);
     i++;
   }
 
@@ -41,9 +41,9 @@ void run(struct state *state) {
 int main(void) {
   static struct state state;
   init_state(&state);
-  state.mem[0] = 0b0000000000000111;
-  state.mem[1] = 0b0100000000000000;
-  state.mem[2] = 0b1111100000000000;
+  char *file = "tests/test.mem";
+
+  load_mem(file, state.mem);
 
   run(&state);
 
