@@ -7,7 +7,7 @@
 #include <string.h>
 #include <sys/types.h>
 
-#define INST_LEN 6
+#define MAX_LINE_LEN 512
 
 int load_mem(char *file, uint16_t *mem) {
   FILE *fp = fopen(file, "r");
@@ -17,11 +17,14 @@ int load_mem(char *file, uint16_t *mem) {
     return 1;
   }
 
-  char buf[INST_LEN + 1];
+  char buf[MAX_LINE_LEN + 1];
   char *endp;
   int i = 0;
 
-  while (fgets(buf, INST_LEN, fp)) {
+  while (fgets(buf, MAX_LINE_LEN, fp) && i < 65536) {
+    if (buf[0] == '\n' || buf[0] == '#') {
+      continue;
+    }
     mem[i] = (uint16_t)strtol(buf, &endp, 0);
     i++;
   }
