@@ -1,18 +1,26 @@
 # 変数の定義
 CC = gcc
 CFLAGS = -Wall -g
-TARGET = main
+TARGET = cpu_emu
+
+OBJS = main.o cpu.o
+HEADERS = emulator.h cpu.h
 
 all: $(TARGET)
 
-$(TARGET): main.o
-	$(CC) $(CFLAGS) -o $(TARGET) main.o
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
 
-main.o: main.c
+main.o: main.c $(HEADERS)
 	$(CC) $(CFLAGS) -c main.c
+
+cpu.o: cpu.c $(HEADERS)
+	$(CC) $(CFLAGS) -c cpu.c
 
 run: $(TARGET)
 	./$(TARGET)
 
 clean:
 	rm -f $(TARGET) *.o
+
+.PHONY: all run clean
