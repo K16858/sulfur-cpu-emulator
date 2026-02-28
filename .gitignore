@@ -1,4 +1,5 @@
 main
+cpu_emu
 *.o
 tests/
 notes/
