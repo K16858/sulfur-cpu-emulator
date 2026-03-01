@@ -1,5 +1,6 @@
 #include "cpu.h"
 #include "emulator.h"
+#include "utils.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -43,18 +44,32 @@ void run(struct state *state) {
 }
 
 int main(void) {
-  static struct state state;
-  init_state(&state);
-  char *file = "tests/test.mem";
+  // static struct state state;
+  // init_state(&state);
+  // char *file = "tests/test.mem";
 
-  int word_count = load_mem(file, state.mem);
-  if (word_count > 0) {
-    printf("Successfully loaded %d words.\n", word_count);
-  } else {
-    printf("Failed to load program or file is empty.\n");
+  // int word_count = load_mem(file, state.mem);
+  // if (word_count > 0) {
+  //   printf("Successfully loaded %d words.\n", word_count);
+  // } else {
+  //   printf("Failed to load program or file is empty.\n");
+  // }
+
+  // run(&state);
+
+  char code[] = "add $r1, $r2, $r3";
+  char *ret[10];
+
+  printf("%s\n", code);
+
+  subst(code, ',', ' ');
+
+  printf("%s\n", code);
+
+  int c = split(code, ret, ' ', 10);
+
+  for (int i = 0; i < c; i++) {
+    printf("%s\n", ret[i]);
   }
-
-  run(&state);
-
   return 0;
 }
