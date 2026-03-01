@@ -14,17 +14,24 @@ int subst(char *str, char c1, char c2) {
 
 int split(char *str, char *ret[], char sep, int max) {
   int count = 0;
-  char *p = str;
 
-  while (*str != '\0') {
-    if (*str == sep && count < max) {
-      *str = '\0';
-      p = str + 1;
-      count++;
+  while (*str != '\0' && count < max) {
+    while (*str == sep && *str != '\0') {
+      str++;
+    }
+    if (*str == '\0')
+      break;
+    ret[count] = str;
+    count++;
+
+    while (*str != sep && *str != '\0') {
+      str++;
     }
 
-    ret[count] = p;
-    str++;
+    if (*str == sep) {
+      *str = '\0';
+      str++;
+    }
   }
 
   return count;
