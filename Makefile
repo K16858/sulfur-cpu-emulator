@@ -3,10 +3,10 @@ CFLAGS = -Wall -g -Isrc
 TARGET = cpu_emu
 
 SRCDIR = src
-SOURCES = $(SRCDIR)/main.c $(SRCDIR)/cpu.c $(SRCDIR)/utils.c
-OBJS = main.o cpu.o utils.o
+SOURCES = $(SRCDIR)/main.c $(SRCDIR)/cpu.c $(SRCDIR)/utils.c $(SRCDIR)/assembler.c
+OBJS = main.o cpu.o utils.o assembler.o
 
-HEADERS = $(SRCDIR)/emulator.h $(SRCDIR)/cpu.h $(SRCDIR)/utils.h
+HEADERS = $(SRCDIR)/emulator.h $(SRCDIR)/cpu.h $(SRCDIR)/utils.h $(SRCDIR)/assembler.h
 
 all: $(TARGET)
 

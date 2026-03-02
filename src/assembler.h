@@ -19,6 +19,6 @@ struct parsed_line {
 };
 
 int tokenize_line(char *line, char *ret[]);
-int parse_line(char *line, struct parsed_line parse_result);
+int parse_line(char *line, struct parsed_line *parse_result);
 
 #endif

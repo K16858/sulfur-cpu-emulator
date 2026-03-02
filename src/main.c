@@ -1,6 +1,6 @@
+#include "assembler.h"
 #include "cpu.h"
 #include "emulator.h"
-#include "utils.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -34,14 +34,14 @@ int load_mem(char *file, uint16_t *mem) {
   return i;
 }
 
-void run(struct state *state) {
-  while (state->running) {
-    if (step(state) != 0) {
-      printf("CPU Panic: Exception occurred at PC=0x%04X\n", state->pc);
-      break;
-    }
-  }
-}
+// void run(struct state *state) {
+//   while (state->running) {
+//     if (step(state) != 0) {
+//       printf("CPU Panic: Exception occurred at PC=0x%04X\n", state->pc);
+//       break;
+//     }
+//   }
+// }
 
 int main(void) {
   // static struct state state;
@@ -57,19 +57,20 @@ int main(void) {
 
   // run(&state);
 
-  char code[] = "add $r1, $r2, $r3";
-  char *ret[10];
+  char code[] = "LABEL: addi $r1, $r2, 10000";
 
-  printf("%s\n", code);
+  struct parsed_line result;
 
-  subst(code, ',', ' ');
+  parse_line(code, &result);
 
-  printf("%s\n", code);
+  printf("operator: %s\n", result.operation);
 
-  int c = split(code, ret, ' ', 10);
-
-  for (int i = 0; i < c; i++) {
-    printf("%s\n", ret[i]);
+  for (int i = 0; i < 3; i++) {
+    printf("reg%d: %d\n", i, result.regs[i]);
   }
+
+  printf("imm: %d\n", result.imm);
+  printf("lable: %s\n", result.target_label);
+
   return 0;
 }
