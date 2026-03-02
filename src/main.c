@@ -1,6 +1,7 @@
 #include "assembler.h"
 #include "cpu.h"
 #include "emulator.h"
+#include "utils.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -57,12 +58,13 @@ int main(void) {
 
   // run(&state);
 
-  char code[] = "LABEL: addi $r1, $r2, 10000";
+  char code[] = "LABEL: addi $r1, $r2, 1000";
 
   struct parsed_line result;
 
   parse_line(code, &result);
 
+  printf("label: %s\n", result.label_name);
   printf("operator: %s\n", result.operation);
 
   for (int i = 0; i < 3; i++) {
@@ -70,7 +72,7 @@ int main(void) {
   }
 
   printf("imm: %d\n", result.imm);
-  printf("lable: %s\n", result.target_label);
+  printf("target_lable: %s\n", result.target_label);
 
   return 0;
 }
