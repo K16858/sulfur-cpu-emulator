@@ -22,6 +22,7 @@ int parse_line(char *line, struct parsed_line *parse_result) {
   }
 
   if (end_with(ret[0], ':')) {
+    subst(ret[0], ':', '\0');
     parse_result->is_label = true;
     parse_result->label_name = strdup(ret[0]);
     if (token_count == 1) {
