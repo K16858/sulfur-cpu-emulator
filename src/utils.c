@@ -1,4 +1,7 @@
 #include "utils.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
 
 int subst(char *str, char c1, char c2) {
   int c = 0;
@@ -35,4 +38,18 @@ int split(char *str, char *ret[], char sep, int max) {
   }
 
   return count;
+}
+
+bool end_with(char *str, char target) {
+  size_t len = strlen(str);
+
+  if (len == 0) {
+    return false;
+  }
+
+  if (str[len - 1] == target) {
+    return true;
+  } else {
+    return false;
+  }
 }
