@@ -21,6 +21,17 @@ struct instruction_info instruction_table[] = {
     {"halt", 0b1111, 0, TYPE_BR},
 };
 
+struct instruction_info *get_instruction_info(char *name) {
+  for (int i = 0; i < sizeof(instruction_table) / sizeof(instruction_table[0]);
+       i++) {
+    if (strcmp(name, instruction_table[i].name) == 0) {
+      return &instruction_table[i];
+    }
+  }
+
+  return NULL;
+}
+
 int get_label_address(struct symbol *label_table[], char *label_name,
                       int label_count) {
   for (int i = 0; i < label_count; i++) {
