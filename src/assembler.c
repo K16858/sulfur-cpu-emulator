@@ -9,11 +9,7 @@
 #define MAX_NAME_LEN 100
 #define MAX_LABEL 1024
 
-struct {
-  char *name;
-  uint16_t opcode;
-  uint16_t func;
-} instruction_table[] = {
+struct instruction_info instruction_table[] = {
     {"add", 0b0000, 0b000}, {"sub", 0b0000, 0b001}, {"slt", 0b0000, 0b010},
     {"and", 0b0000, 0b011}, {"or", 0b0000, 0b100},  {"xor", 0b0000, 0b101},
     {"shl", 0b0000, 0b110}, {"shr", 0b0000, 0b111}, {"addi", 0b0001, 0},

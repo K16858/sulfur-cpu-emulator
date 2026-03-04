@@ -1,6 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include "emulator.h"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -16,6 +17,12 @@ struct parsed_line {
     char *target_label;
     char *label_name;
     bool is_label;
+};
+
+struct instruction_info {
+  char *name;
+  uint16_t opcode;
+  uint16_t func;
 };
 
 int get_label_address(struct symbol *label_table[], char *label_name, int label_count);
