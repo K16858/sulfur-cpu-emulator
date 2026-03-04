@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+enum inst_type { TYPE_R, TYPE_I6, TYPE_I9, TYPE_J, TYPE_BR, TYPE_SP };
+
 struct symbol {
     char *name;
     uint16_t address;
@@ -23,6 +25,7 @@ struct instruction_info {
   char *name;
   uint16_t opcode;
   uint16_t func;
+  enum inst_type type;
 };
 
 int get_label_address(struct symbol *label_table[], char *label_name, int label_count);

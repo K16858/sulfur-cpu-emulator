@@ -10,12 +10,15 @@
 #define MAX_LABEL 1024
 
 struct instruction_info instruction_table[] = {
-    {"add", 0b0000, 0b000}, {"sub", 0b0000, 0b001}, {"slt", 0b0000, 0b010},
-    {"and", 0b0000, 0b011}, {"or", 0b0000, 0b100},  {"xor", 0b0000, 0b101},
-    {"shl", 0b0000, 0b110}, {"shr", 0b0000, 0b111}, {"addi", 0b0001, 0},
-    {"subi", 0b0010, 0},    {"ld", 0b0011, 0},      {"sr", 0b0100, 0},
-    {"beqz", 0b0101, 0},    {"bnez", 0b0110, 0},    {"jal", 0b0111, 0},
-    {"ret", 0b1000, 0},     {"halt", 0b1111, 0},
+    {"add", 0b0000, 0b000, TYPE_R}, {"sub", 0b0000, 0b001, TYPE_R},
+    {"slt", 0b0000, 0b010, TYPE_R}, {"and", 0b0000, 0b011, TYPE_R},
+    {"or", 0b0000, 0b100, TYPE_R},  {"xor", 0b0000, 0b101, TYPE_R},
+    {"shl", 0b0000, 0b110, TYPE_R}, {"shr", 0b0000, 0b111, TYPE_R},
+    {"addi", 0b0001, 0, TYPE_I9},   {"subi", 0b0010, 0, TYPE_I9},
+    {"ld", 0b0011, 0, TYPE_I6},     {"sr", 0b0100, 0, TYPE_I6},
+    {"beqz", 0b0101, 0, TYPE_BR},   {"bnez", 0b0110, 0, TYPE_BR},
+    {"jal", 0b0111, 0, TYPE_J},     {"ret", 0b1000, 0, TYPE_SP},
+    {"halt", 0b1111, 0, TYPE_BR},
 };
 
 int get_label_address(struct symbol *label_table[], char *label_name,
