@@ -2,10 +2,43 @@
 #include "string.h"
 #include "utils.h"
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #define MAX_NAME_LEN 100
+#define MAX_LABEL 1024
+
+int get_label_address(struct symbol *label_table[], char *label_name,
+                      int label_count) {
+  for (int i = 0; i < label_count; i++) {
+    if (strcmp(label_table[i]->name, label_name) == 0) {
+      return label_table[i]->address;
+    }
+  }
+
+  return -1;
+}
+
+bool register_lable(struct symbol *label_table[], char *label_name, int address,
+                    int label_count) {
+  if (get_label_address(label_table, label_name, label_count) != -1) {
+    return false;
+  }
+
+  if (label_name == NULL) {
+    return false;
+  }
+
+  if (label_count < MAX_LABEL) {
+    label_table[label_count]->name = strdup(label_name);
+    label_table[label_count]->address = address;
+
+    return true;
+  }
+
+  return false;
+}
 
 int tokenize_line(char *line, char *ret[]) {
   subst(line, ',', ' ');
@@ -64,3 +97,12 @@ int parse_line(char *line, struct parsed_line *parse_result) {
     return 0;
   }
 }
+
+// int gen_code_line(char *line) {
+//   int address = 0;
+//   struct parsed_line parse_result;
+
+//   parse_line(line, &parse_result);
+//   if (parse_result.is_label) {
+//   }
+// }
