@@ -23,6 +23,6 @@ bool register_lable(struct symbol *label_table[], char *label_name, int address,
 
 int tokenize_line(char *line, char *ret[]);
 int parse_line(char *line, struct parsed_line *parse_result);
-int gen_code_line(char *line);
+int gen_code_line(char *line, struct symbol *label_table[], int label_count, int current_address);
 
 #endif
