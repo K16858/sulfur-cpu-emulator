@@ -161,6 +161,20 @@ int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
   uint16_t reg2 = (uint16_t)parse_result.regs[2];
   uint16_t imm = (uint16_t)parse_result.imm;
 
+  if (parse_result.target_label != NULL) {
+    int target_address = get_label_address(label_table, parse_result.target_label, *label_count);
+    if (target_address == -1) {
+      fprintf(stderr, "Error: Undefined label '%s'\n", parse_result.target_label);
+      if (parse_result.label_name != NULL) free(parse_result.label_name);
+      if (parse_result.operation != NULL) free(parse_result.operation);
+      if (parse_result.target_label != NULL) free(parse_result.target_label);
+      return 1;
+    }
+
+    int offset = target_address - (*current_address + 1);
+    imm = (uint16_t)offset;
+  }
+
   uint16_t instr;
 
   switch (instr_info->type) {
