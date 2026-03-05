@@ -1,5 +1,5 @@
-#ifndef CPU_H
-#define CPU_H
+#ifndef ASSEMBLER_H
+#define ASSEMBLER_H
 
 #include "emulator.h"
 #include <stdint.h>
