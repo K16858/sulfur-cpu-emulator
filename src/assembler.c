@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX_LINE_LEN 512
 #define MAX_NAME_LEN 100
 #define MAX_LABEL 1024
 
@@ -122,16 +123,18 @@ int parse_line(char *line, struct parsed_line *parse_result) {
   }
 }
 
-int gen_code_line(char *line, struct symbol *label_table[], int label_count,
-                  int current_address) {
+int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
+                  int *current_address) {
   struct parsed_line parse_result;
   struct instruction_info *instr_info;
 
   parse_line(line, &parse_result);
   if (parse_result.is_label) {
-    if (!register_lable(label_table, parse_result.label_name, current_address,
-                        label_count)) {
+    if (!register_lable(label_table, parse_result.label_name, *current_address,
+                        *label_count)) {
       printf("Failed to register lable: %s\n", parse_result.label_name);
+    } else {
+      label_count++;
     }
   }
 
@@ -175,5 +178,34 @@ int gen_code_line(char *line, struct symbol *label_table[], int label_count,
     break;
   }
 
+  current_address++;
   return 0;
+}
+
+int gen_code(char *file) {
+  FILE *fp = fopen(file, "r");
+
+  if (fp == NULL) {
+    printf("Error: Cannot open file: %s\n", file);
+    return 0;
+  }
+
+  struct symbol *label_table[MAX_LABEL];
+
+  char line[MAX_LINE_LEN + 1];
+  int i = 0;
+  int label_count = 0;
+  int current_address = 0;
+
+  while (fgets(line, MAX_LINE_LEN, fp)) {
+    if (line[0] == '\n' || line[0] == '#') {
+      continue;
+    }
+    gen_code_line(line, label_table, &label_count, &current_address);
+    i++;
+  }
+
+  fclose(fp);
+
+  return i;
 }
