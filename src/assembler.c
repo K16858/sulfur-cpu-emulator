@@ -45,7 +45,7 @@ int get_label_address(struct symbol *label_table[], char *label_name,
   return -1;
 }
 
-bool register_lable(struct symbol *label_table[], char *label_name, int address,
+bool register_label(struct symbol *label_table[], char *label_name, int address,
                     int label_count) {
   if (get_label_address(label_table, label_name, label_count) != -1) {
     return false;
@@ -130,9 +130,9 @@ int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
 
   parse_line(line, &parse_result);
   if (parse_result.is_label) {
-    if (!register_lable(label_table, parse_result.label_name, *current_address,
+    if (!register_label(label_table, parse_result.label_name, *current_address,
                         *label_count)) {
-      printf("Failed to register lable: %s\n", parse_result.label_name);
+      printf("Failed to register label: %s\n", parse_result.label_name);
     } else {
       label_count++;
     }

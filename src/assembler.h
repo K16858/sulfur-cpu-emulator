@@ -29,7 +29,7 @@ struct instruction_info {
 };
 
 int get_label_address(struct symbol *label_table[], char *label_name, int label_count);
-bool register_lable(struct symbol *label_table[], char *label_name, int address, int label_count);
+bool register_label(struct symbol *label_table[], char *label_name, int address, int label_count);
 
 struct instruction_info* get_instruction_info(char *name);
 
