@@ -190,7 +190,7 @@ int gen_code(char *file) {
     return 0;
   }
 
-  struct symbol *label_table[MAX_LABEL];
+  struct symbol *label_table[MAX_LABEL] = {0};
 
   char line[MAX_LINE_LEN + 1];
   int i = 0;
@@ -206,6 +206,13 @@ int gen_code(char *file) {
   }
 
   fclose(fp);
+
+  for (int i = 0; i < MAX_LABEL; i++) {
+    if (label_table[i]->name != NULL) {
+      free(label_table[i]->name);
+    }
+    free(label_table[i]);
+  }
 
   return i;
 }
