@@ -224,7 +224,22 @@ int gen_code(char *file) {
     return 0;
   }
 
-  struct symbol *label_table[MAX_LABEL] = {0};
+  struct symbol *label_table[MAX_LABEL];
+  
+  for (int i = 0; i < MAX_LABEL; i++) {
+    label_table[i] = (struct symbol*)malloc(sizeof(struct symbol));
+    if (label_table[i] == NULL) {
+      fprintf(stderr, "Error: Memory allocation failed\n");
+      for (int j = 0; j < i; j++) {
+        if (label_table[j]->name != NULL) free(label_table[j]->name);
+        free(label_table[j]);
+      }
+      fclose(fp);
+      return -1;
+    }
+    label_table[i]->name = NULL;
+    label_table[i]->address = 0;
+  }
 
   char line[MAX_LINE_LEN + 1];
   int i = 0;
