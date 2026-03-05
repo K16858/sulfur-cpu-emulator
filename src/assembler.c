@@ -247,7 +247,12 @@ int gen_code(char *file) {
   int current_address = 0;
 
   while (fgets(line, MAX_LINE_LEN, fp)) {
-    if (line[0] == '\n' || line[0] == '#') {
+    subst(line, '\n', '\0');
+    subst(line, '\r', '\0');
+    subst(line, '\t', ' ');
+    subst(line, '#', '\0');
+
+    if (line[0] == '\0') {
       continue;
     }
     gen_code_line(line, label_table, &label_count, &current_address);
