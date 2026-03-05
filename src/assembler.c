@@ -134,7 +134,7 @@ int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
                         *label_count)) {
       printf("Failed to register label: %s\n", parse_result.label_name);
     } else {
-      label_count++;
+      (*label_count)++;
     }
   }
 
@@ -178,7 +178,7 @@ int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
     break;
   }
 
-  current_address++;
+  (*current_address)++;
   return 0;
 }
 
