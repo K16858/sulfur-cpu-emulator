@@ -125,7 +125,7 @@ int parse_line(char *line, struct parsed_line *parse_result) {
 
 int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
                   int *current_address) {
-  struct parsed_line parse_result;
+  struct parsed_line parse_result = {0};
   struct instruction_info *instr_info;
 
   parse_line(line, &parse_result);
