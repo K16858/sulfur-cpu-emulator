@@ -3,6 +3,7 @@
 #include "utils.h"
 #include <ctype.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -124,6 +125,7 @@ int parse_line(char *line, struct parsed_line *parse_result) {
 int gen_code_line(char *line, struct symbol *label_table[], int label_count,
                   int current_address) {
   struct parsed_line parse_result;
+  struct instruction_info *instr_info;
 
   parse_line(line, &parse_result);
   if (parse_result.is_label) {
@@ -132,4 +134,46 @@ int gen_code_line(char *line, struct symbol *label_table[], int label_count,
       printf("Failed to register lable: %s\n", parse_result.label_name);
     }
   }
+
+  instr_info = get_instruction_info(parse_result.operation);
+
+  uint16_t opcode = instr_info->opcode;
+  uint16_t reg0 = (uint16_t)parse_result.regs[0];
+  uint16_t reg1 = (uint16_t)parse_result.regs[1];
+  uint16_t reg2 = (uint16_t)parse_result.regs[2];
+  uint16_t imm = (uint16_t)parse_result.imm;
+
+  uint16_t instr;
+
+  switch (instr_info->type) {
+  case TYPE_R:
+    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | (reg1 << 6) |
+                       (reg2 << 3) | instr_info->func);
+    printf("0x%04X\n", instr);
+    break;
+  case TYPE_I6:
+    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | (reg1 << 6) | imm);
+    printf("0x%04X\n", instr);
+    break;
+  case TYPE_I9:
+    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | imm);
+    printf("0x%04X\n", instr);
+    break;
+  case TYPE_BR:
+    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | imm);
+    printf("0x%04X\n", instr);
+    break;
+  case TYPE_J:
+    instr = (uint16_t)((opcode << 12) | imm);
+    printf("0x%04X\n", instr);
+    break;
+  case TYPE_SP:
+    instr = (uint16_t)((opcode << 12));
+    printf("0x%04X\n", instr);
+    break;
+  default:
+    break;
+  }
+
+  return 0;
 }
