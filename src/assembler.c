@@ -138,7 +138,22 @@ int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
     }
   }
 
+
+  if (parse_result.operation == NULL) {
+    if (parse_result.label_name != NULL) free(parse_result.label_name);
+    if (parse_result.target_label != NULL) free(parse_result.target_label);
+    return 0;
+  }
+
   instr_info = get_instruction_info(parse_result.operation);
+  
+  if (instr_info == NULL) {
+    fprintf(stderr, "Error: Unknown instruction '%s'\n", parse_result.operation);
+    if (parse_result.label_name != NULL) free(parse_result.label_name);
+    if (parse_result.operation != NULL) free(parse_result.operation);
+    if (parse_result.target_label != NULL) free(parse_result.target_label);
+    return 1;
+  }
 
   uint16_t opcode = instr_info->opcode;
   uint16_t reg0 = (uint16_t)parse_result.regs[0];
@@ -179,6 +194,11 @@ int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
   }
 
   (*current_address)++;
+  
+  if (parse_result.label_name != NULL) free(parse_result.label_name);
+  if (parse_result.operation != NULL) free(parse_result.operation);
+  if (parse_result.target_label != NULL) free(parse_result.target_label);
+  
   return 0;
 }
 
