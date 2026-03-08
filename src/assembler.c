@@ -123,7 +123,7 @@ int parse_line(char *line, struct parsed_line *parse_result) {
   }
 }
 
-int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
+int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[], int *label_count,
                   int *current_address) {
   struct parsed_line parse_result = {0};
   struct instruction_info *instr_info;
@@ -181,27 +181,27 @@ int gen_code_line(char *line, struct symbol *label_table[], int *label_count,
   case TYPE_R:
     instr = (uint16_t)((opcode << 12) | (reg0 << 9) | (reg1 << 6) |
                        (reg2 << 3) | instr_info->func);
-    printf("0x%04X\n", instr);
+    fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_I6:
     instr = (uint16_t)((opcode << 12) | (reg0 << 9) | (reg1 << 6) | imm);
-    printf("0x%04X\n", instr);
+    fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_I9:
     instr = (uint16_t)((opcode << 12) | (reg0 << 9) | imm);
-    printf("0x%04X\n", instr);
+    fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_BR:
     instr = (uint16_t)((opcode << 12) | (reg0 << 9) | imm);
-    printf("0x%04X\n", instr);
+    fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_J:
     instr = (uint16_t)((opcode << 12) | imm);
-    printf("0x%04X\n", instr);
+    fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_SP:
     instr = (uint16_t)((opcode << 12));
-    printf("0x%04X\n", instr);
+    fprintf(out_fp, "0x%04X\n", instr);
     break;
   default:
     break;
@@ -223,6 +223,26 @@ int gen_code(char *file) {
     printf("Error: Cannot open file: %s\n", file);
     return 0;
   }
+
+  char out_file[MAX_LINE_LEN];
+  strncpy(out_file, file, MAX_LINE_LEN - 1);
+  out_file[MAX_LINE_LEN - 1] = '\0';
+  
+  char *dot = strrchr(out_file, '.');
+  if (dot != NULL) {
+    strcpy(dot, ".mem");
+  } else {
+    strcat(out_file, ".mem");
+  }
+  
+  FILE *out_fp = fopen(out_file, "w");
+  if (out_fp == NULL) {
+    fprintf(stderr, "Error: Cannot create output file: %s\n", out_file);
+    fclose(fp);
+    return 0;
+  }
+  
+  printf("Assembling: %s -> %s\n", file, out_file);
 
   struct symbol *label_table[MAX_LABEL];
   
@@ -255,11 +275,14 @@ int gen_code(char *file) {
     if (line[0] == '\0') {
       continue;
     }
-    gen_code_line(line, label_table, &label_count, &current_address);
+    gen_code_line(line, out_fp, label_table, &label_count, &current_address);
     i++;
   }
 
   fclose(fp);
+  fclose(out_fp);
+  
+  printf("Successfully assembled %d instructions\n", current_address);
 
   for (int i = 0; i < MAX_LABEL; i++) {
     if (label_table[i]->name != NULL) {

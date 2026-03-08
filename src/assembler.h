@@ -4,6 +4,7 @@
 #include "emulator.h"
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 enum inst_type { TYPE_R, TYPE_I6, TYPE_I9, TYPE_J, TYPE_BR, TYPE_SP };
 
@@ -35,7 +36,7 @@ struct instruction_info* get_instruction_info(char *name);
 
 int tokenize_line(char *line, char *ret[]);
 int parse_line(char *line, struct parsed_line *parse_result);
-int gen_code_line(char *line, struct symbol *label_table[], int *label_count, int *current_address);
+int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[], int *label_count, int *current_address);
 
 int gen_code(char *file_name);
 
