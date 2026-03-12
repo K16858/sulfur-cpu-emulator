@@ -196,19 +196,19 @@ int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[],
     fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_I6:
-    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | (reg1 << 6) | imm);
+    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | (reg1 << 6) | (imm & 0x3F));
     fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_I9:
-    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | imm);
+    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | (imm & 0x1FF));
     fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_BR:
-    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | imm);
+    instr = (uint16_t)((opcode << 12) | (reg0 << 9) | (imm & 0x1FF));
     fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_J:
-    instr = (uint16_t)((opcode << 12) | imm);
+    instr = (uint16_t)((opcode << 12) | (imm & 0xFFF));
     fprintf(out_fp, "0x%04X\n", instr);
     break;
   case TYPE_SP:
