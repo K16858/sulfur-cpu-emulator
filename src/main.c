@@ -33,30 +33,31 @@ int load_mem(char *file, uint16_t *mem) {
   return i;
 }
 
-// void run(struct state *state) {
-//   while (state->running) {
-//     if (step(state) != 0) {
-//       printf("CPU Panic: Exception occurred at PC=0x%04X\n", state->pc);
-//       break;
-//     }
-//   }
-// }
+void run(struct state *state) {
+  while (state->running) {
+    if (step(state) != 0) {
+      printf("CPU Panic: Exception occurred at PC=0x%04X\n", state->pc);
+      break;
+    }
+  }
+}
 
 int main(void) {
-  // static struct state state;
-  // init_state(&state);
-  // char *file = "tests/test.mem";
 
-  // int word_count = load_mem(file, state.mem);
-  // if (word_count > 0) {
-  //   printf("Successfully loaded %d words.\n", word_count);
-  // } else {
-  //   printf("Failed to load program or file is empty.\n");
-  // }
+  gen_code("tests/forward_ref.s");
 
-  // run(&state);
+  static struct state state;
+  init_state(&state);
+  char *file = "tests/forward_ref.mem";
 
-  gen_code("tests/test.s");
+  int word_count = load_mem(file, state.mem);
+  if (word_count > 0) {
+    printf("Successfully loaded %d words.\n", word_count);
+  } else {
+    printf("Failed to load program or file is empty.\n");
+  }
+
+  run(&state);
 
   return 0;
 }
