@@ -36,7 +36,8 @@ struct instruction_info* get_instruction_info(char *name);
 
 int tokenize_line(char *line, char *ret[]);
 int parse_line(char *line, struct parsed_line *parse_result);
-int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[], int *label_count, int *current_address);
+int collect_labels(char *line, struct symbol *label_table[], int label_count, int current_address);
+int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[], int label_count, int current_address);
 
 int gen_code(char *file_name);
 

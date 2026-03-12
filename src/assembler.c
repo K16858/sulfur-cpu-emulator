@@ -123,26 +123,38 @@ int parse_line(char *line, struct parsed_line *parse_result) {
   }
 }
 
-int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[], int *label_count,
-                  int *current_address) {
+int collect_labels(char *line, struct symbol *label_table[], int label_count, int current_address) {
+  struct parsed_line parse_result = {0};
+
+  parse_line(line, &parse_result);
+  
+  if (parse_result.is_label) {
+    if (!register_label(label_table, parse_result.label_name, current_address,
+                        label_count)) {
+      printf("Failed to register label: %s\n", parse_result.label_name);
+    } else {
+      label_count++;
+    }
+  }
+
+  if (parse_result.label_name != NULL) free(parse_result.label_name);
+  if (parse_result.operation != NULL) free(parse_result.operation);
+  if (parse_result.target_label != NULL) free(parse_result.target_label);
+
+  return label_count;
+}
+
+int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[],
+                  int label_count, int current_address) {
   struct parsed_line parse_result = {0};
   struct instruction_info *instr_info;
 
   parse_line(line, &parse_result);
-  if (parse_result.is_label) {
-    if (!register_label(label_table, parse_result.label_name, *current_address,
-                        *label_count)) {
-      printf("Failed to register label: %s\n", parse_result.label_name);
-    } else {
-      (*label_count)++;
-    }
-  }
-
 
   if (parse_result.operation == NULL) {
     if (parse_result.label_name != NULL) free(parse_result.label_name);
     if (parse_result.target_label != NULL) free(parse_result.target_label);
-    return 0;
+    return current_address;
   }
 
   instr_info = get_instruction_info(parse_result.operation);
@@ -152,7 +164,7 @@ int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[], int *l
     if (parse_result.label_name != NULL) free(parse_result.label_name);
     if (parse_result.operation != NULL) free(parse_result.operation);
     if (parse_result.target_label != NULL) free(parse_result.target_label);
-    return 1;
+    return -1;
   }
 
   uint16_t opcode = instr_info->opcode;
@@ -162,16 +174,16 @@ int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[], int *l
   uint16_t imm = (uint16_t)parse_result.imm;
 
   if (parse_result.target_label != NULL) {
-    int target_address = get_label_address(label_table, parse_result.target_label, *label_count);
+    int target_address = get_label_address(label_table, parse_result.target_label, label_count);
     if (target_address == -1) {
       fprintf(stderr, "Error: Undefined label '%s'\n", parse_result.target_label);
       if (parse_result.label_name != NULL) free(parse_result.label_name);
       if (parse_result.operation != NULL) free(parse_result.operation);
       if (parse_result.target_label != NULL) free(parse_result.target_label);
-      return 1;
+      return -1;
     }
 
-    int offset = target_address - (*current_address + 1);
+    int offset = target_address - (current_address + 1);
     imm = (uint16_t)offset;
   }
 
@@ -207,13 +219,13 @@ int gen_code_line(char *line, FILE *out_fp, struct symbol *label_table[], int *l
     break;
   }
 
-  (*current_address)++;
+  current_address++;
   
   if (parse_result.label_name != NULL) free(parse_result.label_name);
   if (parse_result.operation != NULL) free(parse_result.operation);
   if (parse_result.target_label != NULL) free(parse_result.target_label);
   
-  return 0;
+  return current_address;
 }
 
 int gen_code(char *file) {
@@ -266,6 +278,7 @@ int gen_code(char *file) {
   int label_count = 0;
   int current_address = 0;
 
+  // first pass: collect labels
   while (fgets(line, MAX_LINE_LEN, fp)) {
     subst(line, '\n', '\0');
     subst(line, '\r', '\0');
@@ -275,8 +288,43 @@ int gen_code(char *file) {
     if (line[0] == '\0') {
       continue;
     }
-    gen_code_line(line, out_fp, label_table, &label_count, &current_address);
-    i++;
+    label_count = collect_labels(line, label_table, label_count, current_address);
+    
+    struct parsed_line parse_result = {0};
+    parse_line(line, &parse_result);
+    if (parse_result.operation != NULL) {
+      current_address++;
+    }
+    if (parse_result.label_name != NULL) free(parse_result.label_name);
+    if (parse_result.operation != NULL) free(parse_result.operation);
+    if (parse_result.target_label != NULL) free(parse_result.target_label);
+  }
+
+  fseek(fp, 0, SEEK_SET);
+  current_address = 0;
+
+  // second pass: generate code
+  while (fgets(line, MAX_LINE_LEN, fp)) {
+    subst(line, '\n', '\0');
+    subst(line, '\r', '\0');
+    subst(line, '\t', ' ');
+    subst(line, '#', '\0');
+
+    if (line[0] == '\0') {
+      continue;
+    }
+    int new_address = gen_code_line(line, out_fp, label_table, label_count, current_address);
+    if (new_address == -1) {
+      fprintf(stderr, "Error: Failed to generate code for line: %s\n", line);
+      fclose(fp);
+      fclose(out_fp);
+      for (int j = 0; j < label_count; j++) {
+        if (label_table[j]->name != NULL) free(label_table[j]->name);
+        free(label_table[j]);
+      }
+      return -1;
+    }
+    current_address = new_address;
   }
 
   fclose(fp);
