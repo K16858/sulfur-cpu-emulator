@@ -20,6 +20,7 @@ struct instruction_info instruction_table[] = {
     {"ld", 0b0011, 0, TYPE_I6},     {"sr", 0b0100, 0, TYPE_I6},
     {"beqz", 0b0101, 0, TYPE_BR},   {"bnez", 0b0110, 0, TYPE_BR},
     {"jal", 0b0111, 0, TYPE_J},     {"ret", 0b1000, 0, TYPE_SP},
+    {"lui", 0b1001, 0, TYPE_I9},
     {"halt", 0b1111, 0, TYPE_BR},
 };
 
