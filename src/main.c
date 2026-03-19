@@ -9,6 +9,14 @@
 
 #define MAX_LINE_LEN 512
 
+void print_state(struct state *state) {
+  printf("\n=== CPU State ===\n");
+  printf("PC: 0x%04X\n", state->pc);
+  for (int i = 0; i < 8; i++) {
+    printf("R%d: 0x%04X\n", i, state->regs[i]);
+  }
+}
+
 int load_mem(char *file, uint16_t *mem) {
   FILE *fp = fopen(file, "r");
 
@@ -58,6 +66,8 @@ int main(void) {
   }
 
   run(&state);
+
+  print_state(&state);
 
   return 0;
 }
