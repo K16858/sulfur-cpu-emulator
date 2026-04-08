@@ -22,7 +22,7 @@ int load_mem(char *file, uint16_t *mem) {
 
   if (fp == NULL) {
     printf("Error: Cannot open file: %s\n", file);
-    return 1;
+    return 0;
   }
 
   char buf[MAX_LINE_LEN + 1];
@@ -52,7 +52,9 @@ void run(struct state *state) {
 
 int main(void) {
 
-  gen_code("tests/forward_ref.s");
+  if (gen_code("tests/forward_ref.s") < 1) {
+    return 1;
+  }
 
   static struct state state;
   init_state(&state);
